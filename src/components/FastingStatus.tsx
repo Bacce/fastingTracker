@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getMeals } from "../db";
-import { Zap } from "lucide-react";
+import { Zap, ChevronDown } from "lucide-react";
 
 interface FastingStatusProps {
   refreshKey?: number;
@@ -126,6 +126,7 @@ const phaseProgress = (hours: number, phase: Phase) => {
 export function FastingStatus({ refreshKey = 0 }: FastingStatusProps) {
   const [lastMealTs, setLastMealTs] = useState<number | null>(null);
   const [now, setNow] = useState(Date.now());
+  const [expanded, setExpanded] = useState(false);
 
   // Fetch last meal timestamp whenever refreshKey changes
   useEffect(() => {
@@ -153,7 +154,10 @@ export function FastingStatus({ refreshKey = 0 }: FastingStatusProps) {
   const { h, m, s } = formatElapsed(elapsedMs);
 
   return (
-    <div className="relative bg-slate-800 rounded-2xl p-6 shadow-xl border border-white/5 overflow-hidden">
+    <div
+      className="relative bg-slate-800 rounded-2xl p-6 shadow-xl border border-white/5 overflow-hidden cursor-pointer select-none"
+      onClick={() => setExpanded((v) => !v)}
+    >
       {/* Gradient accent bar */}
       <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${phase.gradient} opacity-80`} />
 
@@ -163,9 +167,15 @@ export function FastingStatus({ refreshKey = 0 }: FastingStatusProps) {
           <Zap size={22} className="text-slate-300" />
           <h2 className="text-lg font-semibold text-slate-100">Fasting Status</h2>
         </div>
-        <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${phase.badgeColor}`}>
-          {phase.label}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${phase.badgeColor}`}>
+            {phase.label}
+          </span>
+          <ChevronDown
+            size={18}
+            className={`text-slate-400 transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}
+          />
+        </div>
       </div>
 
       {/* Timer */}
@@ -198,13 +208,19 @@ export function FastingStatus({ refreshKey = 0 }: FastingStatusProps) {
         </div>
       </div>
 
-      {/* Description + benefit */}
-      <div className="bg-slate-900/40 border border-white/5 rounded-xl px-4 py-3.5 flex flex-col gap-2">
-        <p className="text-sm text-slate-300 leading-relaxed">{phase.description}</p>
-        <p className="text-xs text-slate-400 leading-relaxed">
-          <span className="text-emerald-400 font-medium">Benefit: </span>
-          {phase.benefit}
-        </p>
+      {/* Description + benefit — toggleable */}
+      <div
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${
+          expanded ? "max-h-48 opacity-100 mt-5" : "max-h-0 opacity-0 mt-0"
+        }`}
+      >
+        <div className="bg-slate-900/40 border border-white/5 rounded-xl px-4 py-3.5 flex flex-col gap-2">
+          <p className="text-sm text-slate-300 leading-relaxed">{phase.description}</p>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            <span className="text-emerald-400 font-medium">Benefit: </span>
+            {phase.benefit}
+          </p>
+        </div>
       </div>
     </div>
   );

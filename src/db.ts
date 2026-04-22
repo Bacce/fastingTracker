@@ -57,6 +57,13 @@ export const getMeals = async () => {
   return db.getAllFromIndex('meals', 'by-timestamp');
 };
 
+export const updateMeal = async (id: number, meal: string, timestamp: number) => {
+  const db = await getDB();
+  const existing = await db.get('meals', id);
+  if (!existing) throw new Error(`Meal ${id} not found`);
+  return db.put('meals', { ...existing, meal, timestamp });
+};
+
 // Water Helpers
 export const addWater = async (amount: number, timestamp: number = Date.now()) => {
   const db = await getDB();

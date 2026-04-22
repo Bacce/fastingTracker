@@ -12,8 +12,8 @@ function App() {
   return (
     <div className="max-w-[480px] mx-auto min-h-screen px-4 py-6 flex flex-col gap-6">
       <FastingStatus refreshKey={refreshKey} />
-      <WeeklyTimeline refreshKey={refreshKey} />
       <AddMealForm onMealAdded={handleMealAdded} />
+      <WeeklyTimeline refreshKey={refreshKey} />
       <MealCard refreshKey={refreshKey} />
     </div>
   );

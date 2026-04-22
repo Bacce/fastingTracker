@@ -39,7 +39,7 @@ export function AddMealForm({ onMealAdded }: AddMealFormProps) {
   };
 
   return (
-    <div className="relative bg-slate-800 rounded-2xl p-6 shadow-xl border border-white/5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl overflow-hidden">
+    <div className="relative bg-slate-800 rounded-2xl p-6 shadow-xl border border-white/5 transition-all duration-300 overflow-hidden">
       {/* Top gradient accent bar */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-emerald-500 opacity-80" />
 
@@ -80,7 +80,10 @@ export function AddMealForm({ onMealAdded }: AddMealFormProps) {
             Time
           </label>
           <div className="relative flex items-center">
-            <Clock size={18} className="absolute left-4 text-slate-400 pointer-events-none" />
+            <Clock
+              size={18}
+              className="absolute left-4 text-slate-400 pointer-events-none"
+            />
             <input
               type="datetime-local"
               id="time-input"
