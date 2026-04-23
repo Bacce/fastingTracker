@@ -88,11 +88,27 @@ export function WeeklyTimeline({ refreshKey = 0 }: WeeklyTimelineProps) {
   const [currentNowPct, setCurrentNowPct] = useState(nowPct);
   const [tooltip, setTooltip] = useState<TooltipInfo | null>(null);
 
-  // Fetch meals
+  // Fetch meals and handle visibility changes
   useEffect(() => {
-    getMeals()
-      .then((all) => setDays(buildDays(all as Meal[])))
-      .catch((err) => console.error("WeeklyTimeline:", err));
+    const fetchMeals = () => {
+      getMeals()
+        .then((all) => setDays(buildDays(all as Meal[])))
+        .catch((err) => console.error("WeeklyTimeline:", err));
+    };
+
+    // Initial load
+    fetchMeals();
+
+    // Refresh on app resume
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        fetchMeals();
+        setCurrentNowPct(nowPct());
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [refreshKey]);
 
   // Tick "now" indicator every minute
