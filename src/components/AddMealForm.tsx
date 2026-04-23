@@ -117,7 +117,11 @@ export function AddMealForm({ onMealAdded }: AddMealFormProps) {
         <button
           type="submit"
           disabled={!meal.trim() || isSubmitting}
-          className="w-full mt-6 bg-blue-500 hover:bg-blue-600 text-white border-none py-3.5 px-5 rounded-xl text-base font-semibold cursor-pointer flex justify-center items-center gap-2 transition-all duration-200 shadow-lg shadow-blue-500/30 hover:-translate-y-0.5 hover:shadow-blue-500/40 active:translate-y-px disabled:opacity-70 disabled:cursor-not-allowed disabled:translate-y-0"
+          className={`w-full mt-6 py-3.5 px-5 rounded-xl text-base font-semibold flex justify-center items-center gap-2 transition-all duration-200 ${
+            !meal.trim() || isSubmitting
+              ? "bg-slate-700 text-slate-400 cursor-not-allowed"
+              : "bg-blue-500 hover:bg-blue-600 text-white cursor-pointer shadow-lg shadow-blue-500/30 hover:-translate-y-0.5 hover:shadow-blue-500/40 active:translate-y-px"
+          }`}
         >
           <PlusCircle size={20} />
           {isSubmitting ? "Saving..." : "Add Meal"}
