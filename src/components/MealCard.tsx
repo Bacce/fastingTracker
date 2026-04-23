@@ -145,7 +145,7 @@ export function MealCard({ refreshKey = 0 }: MealCardProps) {
               </div>
               <button
                 onClick={() => startEdit(item)}
-                className="opacity-0 group-hover:opacity-100 transition-opacity duration-150 p-1.5 rounded-lg hover:bg-slate-700 text-slate-400 hover:text-slate-200 shrink-0"
+                className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-150 p-1.5 rounded-lg hover:bg-slate-700 text-slate-400 hover:text-slate-200 shrink-0"
                 aria-label="Edit meal"
               >
                 <Pencil size={14} />
