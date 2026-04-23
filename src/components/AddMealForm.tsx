@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Utensils, Clock, PlusCircle } from "lucide-react";
 import { addMeal } from "../db";
 
@@ -18,7 +18,21 @@ const nowLocalString = () => {
 export function AddMealForm({ onMealAdded }: AddMealFormProps) {
   const [meal, setMeal] = useState("");
   const [time, setTime] = useState(nowLocalString);
+  const [timeTouched, setTimeTouched] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible" && !timeTouched) {
+        setTime(nowLocalString());
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [timeTouched]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,6 +44,7 @@ export function AddMealForm({ onMealAdded }: AddMealFormProps) {
       await addMeal(meal.trim(), timestamp);
       setMeal("");
       setTime(nowLocalString());
+      setTimeTouched(false);
       onMealAdded();
     } catch (error) {
       console.error("Failed to add meal", error);
@@ -88,7 +103,10 @@ export function AddMealForm({ onMealAdded }: AddMealFormProps) {
               type="datetime-local"
               id="time-input"
               value={time}
-              onChange={(e) => setTime(e.target.value)}
+              onChange={(e) => {
+                setTime(e.target.value);
+                setTimeTouched(true);
+              }}
               required
               className="w-full bg-slate-900/50 border border-white/10 text-slate-100 pl-11 pr-4 py-3.5 rounded-xl text-[15px] transition-all duration-200 focus:outline-none focus:border-blue-500 focus:ring-[3px] focus:ring-blue-500/20 [color-scheme:dark]"
             />
