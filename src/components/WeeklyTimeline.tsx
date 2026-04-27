@@ -18,6 +18,7 @@ interface DayData {
   dateKey: string;
   meals: Meal[];
   isToday: boolean;
+  fastingHours: string | null;
 }
 
 interface TooltipInfo {
@@ -60,8 +61,10 @@ const TIME_AXIS = [
   { label: "24h", pct: 100 },
 ];
 
-const buildDays = (allMeals: Meal[]): DayData[] =>
-  Array.from({ length: 5 }, (_, i) => {
+const buildDays = (allMeals: Meal[]): DayData[] => {
+  const sortedMeals = [...allMeals].sort((a, b) => a.timestamp - b.timestamp);
+
+  return Array.from({ length: 5 }, (_, i) => {
     const d = new Date();
     d.setDate(d.getDate() - (4 - i)); // i=0 → 4 days ago … i=4 → today
     const dateKey = localDateKey(d);
@@ -75,11 +78,24 @@ const buildDays = (allMeals: Meal[]): DayData[] =>
       month: "short",
       day: "numeric",
     });
-    const meals = allMeals.filter(
+    const meals = sortedMeals.filter(
       (m) => localDateKey(new Date(m.timestamp)) === dateKey
     );
-    return { label, shortDate, dateKey, meals, isToday };
+
+    let fastingHours: string | null = null;
+    if (meals.length > 0) {
+      const firstMeal = meals[0];
+      const idx = sortedMeals.findIndex((m) => m.id === firstMeal.id);
+      if (idx > 0) {
+        const prevMeal = sortedMeals[idx - 1];
+        const diffHours = (firstMeal.timestamp - prevMeal.timestamp) / 3600000;
+        fastingHours = (Math.round(diffHours * 10) / 10) + "h";
+      }
+    }
+
+    return { label, shortDate, dateKey, meals, isToday, fastingHours };
   });
+};
 
 // ── component ─────────────────────────────────────────────────────────────────
 
@@ -219,10 +235,16 @@ export function WeeklyTimeline({ refreshKey = 0 }: WeeklyTimelineProps) {
               })}
             </div>
 
-            {/* Meal count badge */}
-            <div className="mt-1.5 text-center">
-              <span className="text-[10px] text-slate-600">
-                {day.meals.length > 0 ? `${day.meals.length}` : "—"}
+            {/* Meal count badge & Fasting duration */}
+            <div className="mt-1.5 flex flex-col items-center h-8">
+              <span className="text-[10px] text-slate-500" title="Meals today">
+                {day.meals.length > 0 ? `${day.meals.length} meals` : "—"}
+              </span>
+              <span 
+                className="text-[10px] font-medium text-pink-400 mt-0.5" 
+                title="Fasting duration before first meal"
+              >
+                {day.fastingHours || ""}
               </span>
             </div>
           </div>
