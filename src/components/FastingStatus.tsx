@@ -127,6 +127,7 @@ export function FastingStatus({ refreshKey = 0 }: FastingStatusProps) {
   const [lastMealTs, setLastMealTs] = useState<number | null>(null);
   const [now, setNow] = useState(Date.now());
   const [expanded, setExpanded] = useState(false);
+  const [selectedPhaseLabel, setSelectedPhaseLabel] = useState<string | null>(null);
 
   // Fetch last meal timestamp whenever refreshKey changes
   useEffect(() => {
@@ -150,13 +151,21 @@ export function FastingStatus({ refreshKey = 0 }: FastingStatusProps) {
   const elapsedMs = Math.max(0, now - lastMealTs);
   const elapsedHours = elapsedMs / 3_600_000;
   const phase = getPhase(elapsedHours);
+  const displayPhase = selectedPhaseLabel 
+    ? PHASES.find(p => p.label === selectedPhaseLabel) || phase 
+    : phase;
   const progress = phaseProgress(elapsedHours, phase);
   const { h, m, s } = formatElapsed(elapsedMs);
 
   return (
     <div
       className="relative bg-slate-800 rounded-2xl p-6 shadow-xl border border-white/5 overflow-hidden cursor-pointer select-none"
-      onClick={() => setExpanded((v) => !v)}
+      onClick={() => {
+        setExpanded((v) => {
+          if (v) setSelectedPhaseLabel(null);
+          return !v;
+        });
+      }}
     >
       {/* Gradient accent bar */}
       <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${phase.gradient} opacity-80`} />
@@ -168,9 +177,6 @@ export function FastingStatus({ refreshKey = 0 }: FastingStatusProps) {
           <h2 className="text-lg font-semibold text-slate-100">Fasting Status</h2>
         </div>
         <div className="flex items-center gap-2">
-          <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${phase.badgeColor}`}>
-            {phase.label}
-          </span>
           <ChevronDown
             size={18}
             className={`text-slate-400 transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}
@@ -194,6 +200,33 @@ export function FastingStatus({ refreshKey = 0 }: FastingStatusProps) {
         </div>
       </div>
 
+      {/* Phase Badges */}
+      <div className="flex flex-wrap gap-1.5 mb-5">
+        {PHASES.map((p) => {
+          const isCurrent = p.label === phase.label;
+          const isSelected = p.label === selectedPhaseLabel;
+          const badgeClass = isCurrent
+            ? p.badgeColor
+            : "text-slate-500 border-slate-700/50 bg-slate-800/30 hover:bg-slate-700/50";
+            
+          return (
+            <span
+              key={p.label}
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedPhaseLabel(isSelected ? null : p.label);
+                setExpanded(true);
+              }}
+              className={`cursor-pointer text-[10px] font-medium px-2.5 py-1 rounded-full border transition-all duration-300 ${badgeClass} ${
+                isSelected ? "ring-1 ring-slate-300 !border-slate-300" : ""
+              } ${!isCurrent && isSelected ? "text-slate-200" : ""}`}
+            >
+              {p.label}
+            </span>
+          );
+        })}
+      </div>
+
       {/* Phase progress bar */}
       <div className="mb-5">
         <div className="flex justify-between text-xs text-slate-500 mb-1.5">
@@ -215,10 +248,18 @@ export function FastingStatus({ refreshKey = 0 }: FastingStatusProps) {
         }`}
       >
         <div className="bg-slate-900/40 border border-white/5 rounded-xl px-4 py-3.5 flex flex-col gap-2">
-          <p className="text-sm text-slate-300 leading-relaxed">{phase.description}</p>
+          <p className="text-sm text-slate-300 leading-relaxed">
+            {selectedPhaseLabel && selectedPhaseLabel !== phase.label && (
+              <span className="font-semibold text-slate-200 mr-2">{displayPhase.label}:</span>
+            )}
+            {displayPhase.description}
+          </p>
           <p className="text-xs text-slate-400 leading-relaxed">
             <span className="text-emerald-400 font-medium">Benefit: </span>
-            {phase.benefit}
+            {displayPhase.benefit}
+          </p>
+          <p className="text-xs text-slate-500 font-medium">
+            Duration: {displayPhase.state}
           </p>
         </div>
       </div>
