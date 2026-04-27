@@ -3,6 +3,7 @@ import { AddMealForm } from "./components/AddMealForm";
 import { MealCard } from "./components/MealCard";
 import { FastingStatus } from "./components/FastingStatus";
 import { WeeklyTimeline } from "./components/WeeklyTimeline";
+import { DataImportExport } from "./components/DataImportExport";
 
 function App() {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -15,6 +16,7 @@ function App() {
       <AddMealForm onMealAdded={handleMealAdded} />
       <WeeklyTimeline refreshKey={refreshKey} />
       <MealCard refreshKey={refreshKey} />
+      <DataImportExport onImport={handleMealAdded} />
     </div>
   );
 }
