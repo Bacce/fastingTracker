@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Utensils, Pencil, Check, X, Flame, ChevronDown } from "lucide-react";
-import { getMeals, updateMeal } from "../db";
+import { Utensils, Pencil, Check, X, Flame, ChevronDown, Trash2 } from "lucide-react";
+import { getMeals, updateMeal, deleteMeal } from "../db";
 
 interface MealCardProps {
   refreshKey?: number;
@@ -79,6 +79,23 @@ export function MealCard({ refreshKey = 0, onMealEdited }: MealCardProps) {
     }
   };
 
+  const handleDelete = async () => {
+    if (editingId === null) return;
+    setSaving(true);
+    try {
+      if (window.confirm("Are you sure you want to delete this meal?")) {
+        await deleteMeal(editingId);
+        setEditingId(null);
+        await load();
+        if (onMealEdited) onMealEdited();
+      }
+    } catch (err) {
+      console.error("Failed to delete meal", err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (meals.length === 0) return null;
 
   return (
@@ -147,6 +164,14 @@ export function MealCard({ refreshKey = 0, onMealEdited }: MealCardProps) {
                 >
                   <Check size={15} />
                   {saving ? "Saving…" : "Save"}
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={saving}
+                  className="px-4 flex items-center justify-center bg-rose-500/20 hover:bg-rose-500/40 text-rose-400 hover:text-rose-300 rounded-lg transition-colors duration-150"
+                  title="Delete meal"
+                >
+                  <Trash2 size={16} />
                 </button>
                 <button
                   onClick={cancelEdit}

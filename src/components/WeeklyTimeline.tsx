@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Calendar, Flame, Pencil, Check, X } from "lucide-react";
-import { getMeals, updateMeal } from "../db";
+import { Calendar, Flame, Pencil, Check, X, Trash2 } from "lucide-react";
+import { getMeals, updateMeal, deleteMeal } from "../db";
 
 interface WeeklyTimelineProps {
   refreshKey?: number;
@@ -144,6 +144,24 @@ export function WeeklyTimeline({ refreshKey = 0, onMealEdited }: WeeklyTimelineP
       setDays(buildDays(all as Meal[]));
     } catch (err) {
       console.error("Failed to update meal", err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (editingId === null) return;
+    setSaving(true);
+    try {
+      if (window.confirm("Are you sure you want to delete this meal?")) {
+        await deleteMeal(editingId);
+        setEditingId(null);
+        if (onMealEdited) onMealEdited();
+        const all = await getMeals();
+        setDays(buildDays(all as Meal[]));
+      }
+    } catch (err) {
+      console.error("Failed to delete meal", err);
     } finally {
       setSaving(false);
     }
@@ -362,6 +380,14 @@ export function WeeklyTimeline({ refreshKey = 0, onMealEdited }: WeeklyTimelineP
                           >
                             <Check size={15} />
                             {saving ? "Saving…" : "Save"}
+                          </button>
+                          <button
+                            onClick={handleDelete}
+                            disabled={saving}
+                            className="px-4 flex items-center justify-center bg-rose-500/20 hover:bg-rose-500/40 text-rose-400 hover:text-rose-300 rounded-lg transition-colors duration-150"
+                            title="Delete meal"
+                          >
+                            <Trash2 size={16} />
                           </button>
                           <button
                             onClick={cancelEdit}

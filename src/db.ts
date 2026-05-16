@@ -64,6 +64,11 @@ export const updateMeal = async (id: number, meal: string, timestamp: number, ca
   return db.put('meals', { ...existing, meal, timestamp, calories });
 };
 
+export const deleteMeal = async (id: number) => {
+  const db = await getDB();
+  return db.delete('meals', id);
+};
+
 // Water Helpers
 export const addWater = async (amount: number, timestamp: number = Date.now()) => {
   const db = await getDB();
