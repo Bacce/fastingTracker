@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Calendar, Flame } from "lucide-react";
-import { getMeals } from "../db";
+import { Calendar, Flame, Pencil, Check, X } from "lucide-react";
+import { getMeals, updateMeal } from "../db";
 
 interface WeeklyTimelineProps {
   refreshKey?: number;
+  onMealEdited?: () => void;
 }
 
 interface Meal {
@@ -52,6 +53,14 @@ const formatShortTime = (ts: number) =>
     minute: "2-digit",
     hour12: true,
   }).format(new Date(ts));
+
+/** Local datetime-local string (YYYY-MM-DDTHH:mm) */
+const toLocalDTString = (ts: number) => {
+  const d = new Date(ts);
+  d.setSeconds(0, 0);
+  const offset = d.getTimezoneOffset() * 60_000;
+  return new Date(d.getTime() - offset).toISOString().slice(0, 16);
+};
 
 const TIME_AXIS = [
   { label: "0h", pct: 0 },
@@ -103,10 +112,42 @@ const buildDays = (allMeals: Meal[]): DayData[] => {
 
 // ── component ─────────────────────────────────────────────────────────────────
 
-export function WeeklyTimeline({ refreshKey = 0 }: WeeklyTimelineProps) {
+export function WeeklyTimeline({ refreshKey = 0, onMealEdited }: WeeklyTimelineProps) {
   const [days, setDays] = useState<DayData[]>([]);
   const [currentNowPct, setCurrentNowPct] = useState(nowPct);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
+
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editMeal, setEditMeal] = useState("");
+  const [editTime, setEditTime] = useState("");
+  const [editCalories, setEditCalories] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const startEdit = (m: Meal) => {
+    setEditingId(m.id);
+    setEditMeal(m.meal);
+    setEditTime(toLocalDTString(m.timestamp));
+    setEditCalories(m.calories !== undefined ? String(m.calories) : "");
+  };
+
+  const cancelEdit = () => setEditingId(null);
+
+  const saveEdit = async () => {
+    if (editingId === null || !editMeal.trim()) return;
+    setSaving(true);
+    try {
+      const kcal = editCalories !== "" ? parseInt(editCalories, 10) : undefined;
+      await updateMeal(editingId, editMeal.trim(), new Date(editTime).getTime(), kcal);
+      setEditingId(null);
+      if (onMealEdited) onMealEdited();
+      const all = await getMeals();
+      setDays(buildDays(all as Meal[]));
+    } catch (err) {
+      console.error("Failed to update meal", err);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   // Fetch meals and handle visibility changes
   useEffect(() => {
@@ -286,18 +327,72 @@ export function WeeklyTimeline({ refreshKey = 0 }: WeeklyTimelineProps) {
               ) : (
                 <ul className="divide-y divide-white/5">
                   {day.meals.map((meal) => (
-                    <li key={meal.id} className="px-4 py-2.5 flex items-center justify-between">
-                      <span className="text-sm text-slate-100">{meal.meal}</span>
-                      <div className="flex items-center gap-3 shrink-0 ml-4">
-                        {meal.calories !== undefined && (
-                          <span className="flex items-center gap-0.5 text-[11px] text-orange-400/80">
-                            <Flame size={10} />
-                            {meal.calories} kcal
-                          </span>
-                        )}
-                        <span className="text-xs text-slate-400">{formatShortTime(meal.timestamp)}</span>
-                      </div>
-                    </li>
+                    editingId === meal.id ? (
+                      <li key={meal.id} className="px-4 py-3 bg-slate-800/80 border-y border-violet-500/30 flex flex-col gap-3">
+                        <input
+                          type="text"
+                          value={editMeal}
+                          onChange={(e) => setEditMeal(e.target.value)}
+                          className="w-full bg-slate-900/60 border border-white/10 text-slate-100 px-3 py-2 rounded-lg text-[14px] focus:outline-none focus:border-violet-500 focus:ring-[3px] focus:ring-violet-500/20"
+                          placeholder="Meal name"
+                          autoFocus
+                        />
+                        <div className="relative flex items-center">
+                          <Flame size={15} className="absolute left-3 text-slate-500" />
+                          <input
+                            type="number"
+                            value={editCalories}
+                            onChange={(e) => setEditCalories(e.target.value)}
+                            className="w-full bg-slate-900/60 border border-white/10 text-slate-100 pl-9 pr-3 py-2 rounded-lg text-[14px] focus:outline-none focus:border-violet-500 focus:ring-[3px] focus:ring-violet-500/20 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                            placeholder="Calories (optional)"
+                            min={0}
+                          />
+                        </div>
+                        <input
+                          type="datetime-local"
+                          value={editTime}
+                          onChange={(e) => setEditTime(e.target.value)}
+                          className="w-full bg-slate-900/60 border border-white/10 text-slate-100 px-3 py-2 rounded-lg text-[14px] focus:outline-none focus:border-violet-500 focus:ring-[3px] focus:ring-violet-500/20 [color-scheme:dark]"
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={saveEdit}
+                            disabled={saving || !editMeal.trim()}
+                            className="flex-1 flex items-center justify-center gap-1.5 bg-violet-500 hover:bg-violet-600 disabled:opacity-60 text-white text-sm font-semibold py-2 rounded-lg transition-colors duration-150"
+                          >
+                            <Check size={15} />
+                            {saving ? "Saving…" : "Save"}
+                          </button>
+                          <button
+                            onClick={cancelEdit}
+                            className="flex-1 flex items-center justify-center gap-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm font-semibold py-2 rounded-lg transition-colors duration-150"
+                          >
+                            <X size={15} />
+                            Cancel
+                          </button>
+                        </div>
+                      </li>
+                    ) : (
+                      <li key={meal.id} className="px-4 py-2.5 flex items-center justify-between group hover:bg-slate-800/40 transition-colors">
+                        <span className="text-sm text-slate-100">{meal.meal}</span>
+                        <div className="flex items-center gap-3 shrink-0 ml-4">
+                          {meal.calories !== undefined && (
+                            <span className="flex items-center gap-0.5 text-[11px] text-orange-400/80">
+                              <Flame size={10} />
+                              {meal.calories} kcal
+                            </span>
+                          )}
+                          <span className="text-xs text-slate-400">{formatShortTime(meal.timestamp)}</span>
+                          <button
+                            onClick={() => startEdit(meal)}
+                            className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-150 p-1.5 rounded-lg hover:bg-slate-700 text-slate-400 hover:text-slate-200 shrink-0"
+                            aria-label="Edit meal"
+                          >
+                            <Pencil size={14} />
+                          </button>
+                        </div>
+                      </li>
+                    )
                   ))}
                 </ul>
               )}
