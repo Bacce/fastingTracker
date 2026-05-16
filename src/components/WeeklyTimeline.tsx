@@ -23,9 +23,7 @@ interface DayData {
   dailyCalories: number | null;
 }
 
-interface TooltipInfo {
-  meal: Meal;
-}
+
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -73,9 +71,7 @@ const buildDays = (allMeals: Meal[]): DayData[] => {
     const isToday = i === 4;
     const label = isToday
       ? "Today"
-      : i === 3
-        ? "Yest."
-        : d.toLocaleDateString("en-US", { weekday: "short" });
+      : d.toLocaleDateString("en-US", { weekday: "short" });
     const shortDate = d.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -110,7 +106,7 @@ const buildDays = (allMeals: Meal[]): DayData[] => {
 export function WeeklyTimeline({ refreshKey = 0 }: WeeklyTimelineProps) {
   const [days, setDays] = useState<DayData[]>([]);
   const [currentNowPct, setCurrentNowPct] = useState(nowPct);
-  const [tooltip, setTooltip] = useState<TooltipInfo | null>(null);
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
 
   // Fetch meals and handle visibility changes
   useEffect(() => {
@@ -193,94 +189,121 @@ export function WeeklyTimeline({ refreshKey = 0 }: WeeklyTimelineProps) {
         </div>
 
         {/* Day tracks */}
-        {days.map((day) => (
-          <div key={day.dateKey} className="flex flex-col flex-1 min-w-0">
-            {/* Track */}
-            <div
-              className="relative rounded-lg bg-slate-900/50 border border-white/5"
-              style={{ height: TRACK_H }}
-              onMouseLeave={() => setTooltip(null)}
-            >
-              {/* Grid lines */}
-              {TIME_AXIS.map(({ label, pct }) => (
-                <div
-                  key={label}
-                  className="absolute left-0 right-0 border-t border-white/[0.06]"
-                  style={{ top: `${pct}%` }}
-                />
-              ))}
+        {days.map((day) => {
+          const isSelected = selectedDay === day.dateKey;
+          return (
+            <div key={day.dateKey} className="flex flex-col flex-1 min-w-0">
+              {/* Track — clickable */}
+              <div
+                className={`relative rounded-lg border cursor-pointer transition-all duration-200 ${
+                  isSelected
+                    ? "bg-slate-700/60 border-violet-500/50 shadow-[0_0_12px_rgba(139,92,246,0.2)]"
+                    : "bg-slate-900/50 border-white/5 hover:border-white/15"
+                }`}
+                style={{ height: TRACK_H }}
+                onClick={() => setSelectedDay(isSelected ? null : day.dateKey)}
+              >
+                {/* Grid lines */}
+                {TIME_AXIS.map(({ label, pct }) => (
+                  <div
+                    key={label}
+                    className="absolute left-0 right-0 border-t border-white/[0.06]"
+                    style={{ top: `${pct}%` }}
+                  />
+                ))}
 
-              {/* "Now" indicator — today only */}
-              {day.isToday && (
-                <div
-                  className="absolute left-0 right-0 z-10 pointer-events-none"
-                  style={{ top: `${currentNowPct}%` }}
-                >
-                  <div className="absolute -left-px -right-px h-px bg-rose-500 opacity-70" />
-                  <div className="absolute left-1 -top-[3px] w-1.5 h-1.5 rounded-full bg-rose-500" />
-                </div>
-              )}
+                {/* "Now" indicator — today only */}
+                {day.isToday && (
+                  <div
+                    className="absolute left-0 right-0 z-10 pointer-events-none"
+                    style={{ top: `${currentNowPct}%` }}
+                  >
+                    <div className="absolute -left-px -right-px h-px bg-rose-500 opacity-70" />
+                    <div className="absolute left-1 -top-[3px] w-1.5 h-1.5 rounded-full bg-rose-500" />
+                  </div>
+                )}
 
-              {/* Meal markers */}
-              {day.meals.map((meal) => {
-                const isHovered = tooltip?.meal.id === meal.id;
-                return (
+                {/* Meal markers */}
+                {day.meals.map((meal) => (
                   <div
                     key={meal.id}
-                    className={`absolute left-1.5 right-1.5 rounded-full cursor-pointer transition-all duration-150 ${isHovered
-                      ? "h-[3px] bg-violet-400 shadow-[0_0_8px_rgba(167,139,250,0.9)]"
-                      : "h-0.5 bg-gradient-to-r from-violet-500 to-pink-500 opacity-75 hover:opacity-100"
-                      }`}
+                    className="absolute left-1.5 right-1.5 rounded-full h-0.5 bg-gradient-to-r from-violet-500 to-pink-500 opacity-75"
                     style={{
                       top: `${mealTopPct(meal.timestamp)}%`,
                       transform: "translateY(-50%)",
                     }}
-                    onMouseEnter={() => setTooltip({ meal })}
                   />
-                );
-              })}
-            </div>
+                ))}
+              </div>
 
-            {/* Meal count badge, Fasting duration & Daily calories */}
-            <div className="mt-1.5 flex flex-col items-center">
-              <span className="text-[10px] text-slate-500" title="Meals today">
-                {day.meals.length > 0 ? `${day.meals.length} meals` : "—"}
-              </span>
-              <span
-                className="text-[16px] font-medium text-pink-400 mt-0.5"
-                title="Fasting duration before first meal"
-              >
-                {day.fastingHours || ""}
-              </span>
-              {day.dailyCalories !== null && (
-                <span
-                  className="flex items-center gap-0.5 text-[10px] text-orange-400/80 mt-0.5"
-                  title="Total calories logged"
-                >
-                  <Flame size={10} />
-                  {day.dailyCalories} kcal
+              {/* Meal count badge, Fasting duration & Daily calories */}
+              <div className="mt-1.5 flex flex-col items-center">
+                <span className="text-[10px] text-slate-500" title="Meals today">
+                  {day.meals.length > 0 ? `${day.meals.length} meals` : "—"}
                 </span>
-              )}
+                <span
+                  className="text-[16px] font-medium text-pink-400 mt-0.5"
+                  title="Fasting duration before first meal"
+                >
+                  {day.fastingHours || ""}
+                </span>
+                {day.dailyCalories !== null && (
+                  <span
+                    className="flex items-center gap-0.5 text-[10px] text-orange-400/80 mt-0.5"
+                    title="Total calories logged"
+                  >
+                    <Flame size={10} />
+                    {day.dailyCalories} kcal
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      {/* Tooltip panel */}
+      {/* Expanded day meal list */}
       <div
-        className={`mt-4 overflow-hidden transition-all duration-200 ${tooltip ? "max-h-20 opacity-100" : "max-h-0 opacity-0"
-          }`}
+        className={`overflow-hidden transition-all duration-300 ${
+          selectedDay ? "max-h-96 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0"
+        }`}
       >
-        {tooltip && (
-          <div className="bg-slate-900/60 border border-white/10 rounded-xl px-4 py-2.5 flex items-center justify-between">
-            <span className="text-sm font-medium text-slate-100">
-              {tooltip.meal.meal}
-            </span>
-            <span className="text-xs text-slate-400 ml-4 shrink-0">
-              {formatShortTime(tooltip.meal.timestamp)}
-            </span>
-          </div>
-        )}
+        {(() => {
+          const day = days.find((d) => d.dateKey === selectedDay);
+          if (!day) return null;
+          return (
+            <div className="bg-slate-900/60 border border-violet-500/20 rounded-xl overflow-hidden">
+              <div className="px-4 py-2 border-b border-white/5 flex items-center justify-between">
+                <span className="text-xs font-semibold text-violet-400">
+                  {day.label} — {day.shortDate}
+                </span>
+                <span className="text-[10px] text-slate-500">
+                  {day.meals.length} meal{day.meals.length !== 1 ? "s" : ""}
+                </span>
+              </div>
+              {day.meals.length === 0 ? (
+                <p className="px-4 py-3 text-sm text-slate-500 italic">No meals recorded.</p>
+              ) : (
+                <ul className="divide-y divide-white/5">
+                  {day.meals.map((meal) => (
+                    <li key={meal.id} className="px-4 py-2.5 flex items-center justify-between">
+                      <span className="text-sm text-slate-100">{meal.meal}</span>
+                      <div className="flex items-center gap-3 shrink-0 ml-4">
+                        {meal.calories !== undefined && (
+                          <span className="flex items-center gap-0.5 text-[11px] text-orange-400/80">
+                            <Flame size={10} />
+                            {meal.calories} kcal
+                          </span>
+                        )}
+                        <span className="text-xs text-slate-400">{formatShortTime(meal.timestamp)}</span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
