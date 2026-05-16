@@ -4,6 +4,7 @@ import { getMeals, updateMeal } from "../db";
 
 interface MealCardProps {
   refreshKey?: number;
+  onMealEdited?: () => void;
 }
 
 interface Meal {
@@ -34,7 +35,7 @@ const toLocalDTString = (ts: number) => {
 
 // ── component ─────────────────────────────────────────────────────────────────
 
-export function MealCard({ refreshKey = 0 }: MealCardProps) {
+export function MealCard({ refreshKey = 0, onMealEdited }: MealCardProps) {
   const [meals, setMeals] = useState<Meal[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editMeal, setEditMeal] = useState("");
@@ -70,6 +71,7 @@ export function MealCard({ refreshKey = 0 }: MealCardProps) {
       await updateMeal(editingId, editMeal.trim(), new Date(editTime).getTime(), kcal);
       setEditingId(null);
       await load();
+      if (onMealEdited) onMealEdited();
     } catch (err) {
       console.error("Failed to update meal", err);
     } finally {

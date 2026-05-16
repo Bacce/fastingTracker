@@ -91,10 +91,10 @@ const buildDays = (allMeals: Meal[]): DayData[] => {
       }
     }
 
-    const mealsWithCalories = meals.filter((m) => m.calories !== undefined);
+    const mealsWithCalories = meals.filter((m) => m.calories !== undefined && m.calories !== null);
     const dailyCalories =
       mealsWithCalories.length > 0
-        ? mealsWithCalories.reduce((sum, m) => sum + (m.calories ?? 0), 0)
+        ? mealsWithCalories.reduce((sum, m) => sum + Number(m.calories), 0)
         : null;
 
     return { label, shortDate, dateKey, meals, isToday, fastingHours, dailyCalories };

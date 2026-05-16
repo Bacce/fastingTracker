@@ -15,7 +15,7 @@ function App() {
       <FastingStatus refreshKey={refreshKey} />
       <AddMealForm onMealAdded={handleMealAdded} />
       <WeeklyTimeline refreshKey={refreshKey} />
-      <MealCard refreshKey={refreshKey} />
+      <MealCard refreshKey={refreshKey} onMealEdited={handleMealAdded} />
       <DataImportExport onImport={handleMealAdded} />
     </div>
   );
