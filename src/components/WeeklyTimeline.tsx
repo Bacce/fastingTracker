@@ -54,8 +54,8 @@ const formatShortTime = (ts: number) =>
   }).format(new Date(ts));
 
 const TIME_AXIS = [
-  { label: "0h",  pct: 0 },
-  { label: "6h",  pct: (6  / 24) * 100 },
+  { label: "0h", pct: 0 },
+  { label: "6h", pct: (6 / 24) * 100 },
   { label: "12h", pct: (12 / 24) * 100 },
   { label: "18h", pct: (18 / 24) * 100 },
   { label: "24h", pct: 100 },
@@ -72,8 +72,8 @@ const buildDays = (allMeals: Meal[]): DayData[] => {
     const label = isToday
       ? "Today"
       : i === 3
-      ? "Yest."
-      : d.toLocaleDateString("en-US", { weekday: "short" });
+        ? "Yest."
+        : d.toLocaleDateString("en-US", { weekday: "short" });
     const shortDate = d.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -151,9 +151,8 @@ export function WeeklyTimeline({ refreshKey = 0 }: WeeklyTimelineProps) {
         {days.map((day) => (
           <div key={day.dateKey} className="flex-1 text-center">
             <div
-              className={`text-xs font-semibold ${
-                day.isToday ? "text-violet-400" : "text-slate-400"
-              }`}
+              className={`text-xs font-semibold ${day.isToday ? "text-violet-400" : "text-slate-400"
+                }`}
             >
               {day.label}
             </div>
@@ -176,8 +175,8 @@ export function WeeklyTimeline({ refreshKey = 0 }: WeeklyTimelineProps) {
                   pct === 0
                     ? "translateY(0)"
                     : pct === 100
-                    ? "translateY(-100%)"
-                    : "translateY(-50%)",
+                      ? "translateY(-100%)"
+                      : "translateY(-50%)",
               }}
             >
               {label}
@@ -220,11 +219,10 @@ export function WeeklyTimeline({ refreshKey = 0 }: WeeklyTimelineProps) {
                 return (
                   <div
                     key={meal.id}
-                    className={`absolute left-1.5 right-1.5 rounded-full cursor-pointer transition-all duration-150 ${
-                      isHovered
-                        ? "h-[3px] bg-violet-400 shadow-[0_0_8px_rgba(167,139,250,0.9)]"
-                        : "h-0.5 bg-gradient-to-r from-violet-500 to-pink-500 opacity-75 hover:opacity-100"
-                    }`}
+                    className={`absolute left-1.5 right-1.5 rounded-full cursor-pointer transition-all duration-150 ${isHovered
+                      ? "h-[3px] bg-violet-400 shadow-[0_0_8px_rgba(167,139,250,0.9)]"
+                      : "h-0.5 bg-gradient-to-r from-violet-500 to-pink-500 opacity-75 hover:opacity-100"
+                      }`}
                     style={{
                       top: `${mealTopPct(meal.timestamp)}%`,
                       transform: "translateY(-50%)",
@@ -240,8 +238,8 @@ export function WeeklyTimeline({ refreshKey = 0 }: WeeklyTimelineProps) {
               <span className="text-[10px] text-slate-500" title="Meals today">
                 {day.meals.length > 0 ? `${day.meals.length} meals` : "—"}
               </span>
-              <span 
-                className="text-[10px] font-medium text-pink-400 mt-0.5" 
+              <span
+                className="text-[16px] font-medium text-pink-400 mt-0.5"
                 title="Fasting duration before first meal"
               >
                 {day.fastingHours || ""}
@@ -253,9 +251,8 @@ export function WeeklyTimeline({ refreshKey = 0 }: WeeklyTimelineProps) {
 
       {/* Tooltip panel */}
       <div
-        className={`mt-4 overflow-hidden transition-all duration-200 ${
-          tooltip ? "max-h-20 opacity-100" : "max-h-0 opacity-0"
-        }`}
+        className={`mt-4 overflow-hidden transition-all duration-200 ${tooltip ? "max-h-20 opacity-100" : "max-h-0 opacity-0"
+          }`}
       >
         {tooltip && (
           <div className="bg-slate-900/60 border border-white/10 rounded-xl px-4 py-2.5 flex items-center justify-between">
