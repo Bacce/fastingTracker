@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Utensils, Clock, PlusCircle } from "lucide-react";
+import { Utensils, Clock, PlusCircle, Flame } from "lucide-react";
 import { addMeal } from "../db";
 
 interface AddMealFormProps {
@@ -18,6 +18,7 @@ const nowLocalString = () => {
 export function AddMealForm({ onMealAdded }: AddMealFormProps) {
   const [meal, setMeal] = useState("");
   const [time, setTime] = useState(nowLocalString);
+  const [calories, setCalories] = useState("");
   const [timeTouched, setTimeTouched] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -41,8 +42,10 @@ export function AddMealForm({ onMealAdded }: AddMealFormProps) {
     setIsSubmitting(true);
     try {
       const timestamp = new Date(time).getTime();
-      await addMeal(meal.trim(), timestamp);
+      const kcal = calories !== "" ? parseInt(calories, 10) : undefined;
+      await addMeal(meal.trim(), timestamp, kcal);
       setMeal("");
+      setCalories("");
       setTime(nowLocalString());
       setTimeTouched(false);
       onMealAdded();
@@ -64,25 +67,47 @@ export function AddMealForm({ onMealAdded }: AddMealFormProps) {
       </div>
 
       <form onSubmit={handleSubmit}>
-        {/* Meal input */}
+        {/* Meal + Calories row */}
         <div className="flex flex-col gap-2 mb-4">
-          <label
-            htmlFor="meal-input"
-            className="text-xs text-slate-400 font-medium uppercase tracking-wider"
-          >
-            What did you eat?
-          </label>
-          <div className="relative flex items-center">
-            <Utensils size={18} className="absolute left-4 text-slate-400" />
-            <input
-              type="text"
-              id="meal-input"
-              value={meal}
-              onChange={(e) => setMeal(e.target.value)}
-              placeholder="e.g. Chicken Salad"
-              required
-              className="w-full bg-slate-900/50 border border-white/10 text-slate-100 pl-11 pr-4 py-3.5 rounded-xl text-[15px] transition-all duration-200 focus:outline-none focus:border-blue-500 focus:ring-[3px] focus:ring-blue-500/20 placeholder:text-slate-600"
-            />
+          <div className="flex items-center justify-between">
+            <label
+              htmlFor="meal-input"
+              className="text-xs text-slate-400 font-medium uppercase tracking-wider"
+            >
+              What did you eat?
+            </label>
+            <label
+              htmlFor="calories-input"
+              className="text-xs text-slate-600 font-medium"
+            >
+              kcal (optional)
+            </label>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="relative flex items-center flex-1">
+              <Utensils size={18} className="absolute left-4 text-slate-400" />
+              <input
+                type="text"
+                id="meal-input"
+                value={meal}
+                onChange={(e) => setMeal(e.target.value)}
+                placeholder="e.g. Chicken Salad"
+                required
+                className="w-full bg-slate-900/50 border border-white/10 text-slate-100 pl-11 pr-4 py-3.5 rounded-xl text-[15px] transition-all duration-200 focus:outline-none focus:border-blue-500 focus:ring-[3px] focus:ring-blue-500/20 placeholder:text-slate-600"
+              />
+            </div>
+            <div className="relative flex items-center w-24">
+              <Flame size={14} className="absolute left-3 text-slate-500" />
+              <input
+                type="number"
+                id="calories-input"
+                value={calories}
+                onChange={(e) => setCalories(e.target.value)}
+                placeholder="450"
+                min={0}
+                className="w-full bg-slate-900/50 border border-white/10 text-slate-100 pl-8 pr-2 py-3.5 rounded-xl text-[13px] transition-all duration-200 focus:outline-none focus:border-blue-500 focus:ring-[3px] focus:ring-blue-500/20 placeholder:text-slate-600 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              />
+            </div>
           </div>
         </div>
 

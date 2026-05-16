@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Utensils, Pencil, Check, X } from "lucide-react";
+import { Utensils, Pencil, Check, X, Flame } from "lucide-react";
 import { getMeals, updateMeal } from "../db";
 
 interface MealCardProps {
@@ -10,6 +10,7 @@ interface Meal {
   id: number;
   meal: string;
   timestamp: number;
+  calories?: number;
 }
 
 // ── helpers ───────────────────────────────────────────────────────────────────
@@ -38,6 +39,7 @@ export function MealCard({ refreshKey = 0 }: MealCardProps) {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editMeal, setEditMeal] = useState("");
   const [editTime, setEditTime] = useState("");
+  const [editCalories, setEditCalories] = useState("");
   const [saving, setSaving] = useState(false);
 
   const load = () =>
@@ -54,6 +56,7 @@ export function MealCard({ refreshKey = 0 }: MealCardProps) {
     setEditingId(m.id);
     setEditMeal(m.meal);
     setEditTime(toLocalDTString(m.timestamp));
+    setEditCalories(m.calories !== undefined ? String(m.calories) : "");
   };
 
   const cancelEdit = () => setEditingId(null);
@@ -62,7 +65,8 @@ export function MealCard({ refreshKey = 0 }: MealCardProps) {
     if (editingId === null || !editMeal.trim()) return;
     setSaving(true);
     try {
-      await updateMeal(editingId, editMeal.trim(), new Date(editTime).getTime());
+      const kcal = editCalories !== "" ? parseInt(editCalories, 10) : undefined;
+      await updateMeal(editingId, editMeal.trim(), new Date(editTime).getTime(), kcal);
       setEditingId(null);
       await load();
     } catch (err) {
@@ -102,6 +106,18 @@ export function MealCard({ refreshKey = 0 }: MealCardProps) {
                 placeholder="Meal name"
                 autoFocus
               />
+              {/* Calories edit */}
+              <div className="relative flex items-center">
+                <Flame size={15} className="absolute left-3 text-slate-500" />
+                <input
+                  type="number"
+                  value={editCalories}
+                  onChange={(e) => setEditCalories(e.target.value)}
+                  className="w-full bg-slate-900/60 border border-white/10 text-slate-100 pl-9 pr-3 py-2 rounded-lg text-[14px] focus:outline-none focus:border-blue-500 focus:ring-[3px] focus:ring-blue-500/20 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  placeholder="Calories (optional)"
+                  min={0}
+                />
+              </div>
               <input
                 type="datetime-local"
                 value={editTime}
@@ -139,9 +155,17 @@ export function MealCard({ refreshKey = 0 }: MealCardProps) {
                 <span className="font-medium text-[15px] text-slate-100 truncate">
                   {item.meal}
                 </span>
-                <span className="text-xs text-slate-400">
-                  {formatTime(item.timestamp)}
-                </span>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-xs text-slate-400">
+                    {formatTime(item.timestamp)}
+                  </span>
+                  {item.calories !== undefined && (
+                    <span className="flex items-center gap-0.5 text-xs text-orange-400/80">
+                      <Flame size={11} />
+                      {item.calories} kcal
+                    </span>
+                  )}
+                </div>
               </div>
               <button
                 onClick={() => startEdit(item)}

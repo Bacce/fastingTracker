@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Calendar } from "lucide-react";
+import { Calendar, Flame } from "lucide-react";
 import { getMeals } from "../db";
 
 interface WeeklyTimelineProps {
@@ -10,6 +10,7 @@ interface Meal {
   id: number;
   meal: string;
   timestamp: number;
+  calories?: number;
 }
 
 interface DayData {
@@ -19,6 +20,7 @@ interface DayData {
   meals: Meal[];
   isToday: boolean;
   fastingHours: string | null;
+  dailyCalories: number | null;
 }
 
 interface TooltipInfo {
@@ -93,7 +95,13 @@ const buildDays = (allMeals: Meal[]): DayData[] => {
       }
     }
 
-    return { label, shortDate, dateKey, meals, isToday, fastingHours };
+    const mealsWithCalories = meals.filter((m) => m.calories !== undefined);
+    const dailyCalories =
+      mealsWithCalories.length > 0
+        ? mealsWithCalories.reduce((sum, m) => sum + (m.calories ?? 0), 0)
+        : null;
+
+    return { label, shortDate, dateKey, meals, isToday, fastingHours, dailyCalories };
   });
 };
 
@@ -233,8 +241,8 @@ export function WeeklyTimeline({ refreshKey = 0 }: WeeklyTimelineProps) {
               })}
             </div>
 
-            {/* Meal count badge & Fasting duration */}
-            <div className="mt-1.5 flex flex-col items-center h-8">
+            {/* Meal count badge, Fasting duration & Daily calories */}
+            <div className="mt-1.5 flex flex-col items-center">
               <span className="text-[10px] text-slate-500" title="Meals today">
                 {day.meals.length > 0 ? `${day.meals.length} meals` : "—"}
               </span>
@@ -244,6 +252,15 @@ export function WeeklyTimeline({ refreshKey = 0 }: WeeklyTimelineProps) {
               >
                 {day.fastingHours || ""}
               </span>
+              {day.dailyCalories !== null && (
+                <span
+                  className="flex items-center gap-0.5 text-[10px] text-orange-400/80 mt-0.5"
+                  title="Total calories logged"
+                >
+                  <Flame size={10} />
+                  {day.dailyCalories} kcal
+                </span>
+              )}
             </div>
           </div>
         ))}
