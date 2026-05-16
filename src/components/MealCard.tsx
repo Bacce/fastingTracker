@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Utensils, Pencil, Check, X, Flame } from "lucide-react";
+import { Utensils, Pencil, Check, X, Flame, ChevronDown } from "lucide-react";
 import { getMeals, updateMeal } from "../db";
 
 interface MealCardProps {
@@ -41,6 +41,7 @@ export function MealCard({ refreshKey = 0 }: MealCardProps) {
   const [editTime, setEditTime] = useState("");
   const [editCalories, setEditCalories] = useState("");
   const [saving, setSaving] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
 
   const load = () =>
     getMeals()
@@ -84,13 +85,25 @@ export function MealCard({ refreshKey = 0 }: MealCardProps) {
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-emerald-500 opacity-80" />
 
       {/* Header */}
-      <div className="flex items-center gap-2.5 mb-5">
+      <button
+        onClick={() => setCollapsed((c) => !c)}
+        className="w-full flex items-center gap-2.5 group"
+        aria-expanded={!collapsed}
+      >
         <Utensils size={22} className="text-blue-500" />
-        <h2 className="text-lg font-semibold text-slate-100">Recent Logs</h2>
-      </div>
+        <h2 className="text-lg font-semibold text-slate-100 flex-1 text-left">Recent Meals</h2>
+        <ChevronDown
+          size={18}
+          className={`text-slate-400 transition-transform duration-300 group-hover:text-slate-200 ${collapsed ? "" : "rotate-180"
+            }`}
+        />
+      </button>
 
       {/* Meal rows */}
-      <div className="flex flex-col gap-3">
+      <div
+        className={`flex flex-col gap-3 overflow-hidden transition-all duration-300 ${collapsed ? "max-h-0 opacity-0" : "max-h-[600px] opacity-100 mt-5"
+          }`}
+      >
         {meals.map((item) =>
           editingId === item.id ? (
             /* ── Edit row ── */
