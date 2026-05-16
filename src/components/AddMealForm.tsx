@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Utensils, Clock, PlusCircle, Flame } from "lucide-react";
+import { Utensils, Clock, PlusCircle, Flame, Sparkles } from "lucide-react";
 import { addMeal } from "../db";
 
 interface AddMealFormProps {
@@ -21,6 +21,32 @@ export function AddMealForm({ onMealAdded }: AddMealFormProps) {
   const [calories, setCalories] = useState("");
   const [timeTouched, setTimeTouched] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFetchingCalories, setIsFetchingCalories] = useState(false);
+
+  const handleFetchCalories = async () => {
+    if (!meal.trim()) return;
+    setIsFetchingCalories(true);
+    try {
+      const response = await fetch("https://calory-api.makosbab.workers.dev", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-secret": import.meta.env.VITE_API_SECRET || "",
+        },
+        body: JSON.stringify({ meal: meal.trim() }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data && typeof data.calories === "number") {
+          setCalories(data.calories.toString());
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch calories:", error);
+    } finally {
+      setIsFetchingCalories(false);
+    }
+  };
 
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -96,7 +122,7 @@ export function AddMealForm({ onMealAdded }: AddMealFormProps) {
                 className="w-full bg-slate-900/50 border border-white/10 text-slate-100 pl-11 pr-4 py-3.5 rounded-xl text-[15px] transition-all duration-200 focus:outline-none focus:border-blue-500 focus:ring-[3px] focus:ring-blue-500/20 placeholder:text-slate-600"
               />
             </div>
-            <div className="relative flex items-center w-24">
+            <div className="relative flex items-center w-32">
               <Flame size={14} className="absolute left-3 text-slate-500" />
               <input
                 type="number"
@@ -105,8 +131,17 @@ export function AddMealForm({ onMealAdded }: AddMealFormProps) {
                 onChange={(e) => setCalories(e.target.value)}
                 placeholder="450"
                 min={0}
-                className="w-full bg-slate-900/50 border border-white/10 text-slate-100 pl-8 pr-2 py-3.5 rounded-xl text-[13px] transition-all duration-200 focus:outline-none focus:border-blue-500 focus:ring-[3px] focus:ring-blue-500/20 placeholder:text-slate-600 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                className="w-full bg-slate-900/50 border border-white/10 text-slate-100 pl-8 pr-9 py-3.5 rounded-xl text-[13px] transition-all duration-200 focus:outline-none focus:border-blue-500 focus:ring-[3px] focus:ring-blue-500/20 placeholder:text-slate-600 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
               />
+              <button
+                type="button"
+                onClick={handleFetchCalories}
+                disabled={!meal.trim() || isFetchingCalories}
+                className="absolute right-2.5 text-slate-400 hover:text-blue-400 disabled:opacity-50 disabled:hover:text-slate-400 transition-colors"
+                title="Estimate calories"
+              >
+                <Sparkles size={16} className={isFetchingCalories ? "animate-pulse text-blue-400" : ""} />
+              </button>
             </div>
           </div>
         </div>
@@ -142,11 +177,10 @@ export function AddMealForm({ onMealAdded }: AddMealFormProps) {
         <button
           type="submit"
           disabled={!meal.trim() || isSubmitting}
-          className={`w-full mt-6 py-3.5 px-5 rounded-xl text-base font-semibold flex justify-center items-center gap-2 transition-all duration-200 ${
-            !meal.trim() || isSubmitting
+          className={`w-full mt-6 py-3.5 px-5 rounded-xl text-base font-semibold flex justify-center items-center gap-2 transition-all duration-200 ${!meal.trim() || isSubmitting
               ? "bg-slate-700 text-slate-400 cursor-not-allowed"
               : "bg-blue-500 hover:bg-blue-600 text-white cursor-pointer shadow-lg shadow-blue-500/30 hover:-translate-y-0.5 hover:shadow-blue-500/40 active:translate-y-px"
-          }`}
+            }`}
         >
           <PlusCircle size={20} />
           {isSubmitting ? "Saving..." : "Add Meal"}
