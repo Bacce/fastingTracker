@@ -43,16 +43,19 @@ export function MealCard({ refreshKey = 0, onMealEdited }: MealCardProps) {
   const [editCalories, setEditCalories] = useState("");
   const [saving, setSaving] = useState(false);
   const [collapsed, setCollapsed] = useState(true);
+  const [limit, setLimit] = useState(5);
+  const [hasMore, setHasMore] = useState(false);
 
   const load = () =>
     getMeals()
       .then((all) => {
         const sorted = [...all].sort((a, b) => b.timestamp - a.timestamp);
-        setMeals(sorted.slice(0, 5) as Meal[]);
+        setMeals(sorted.slice(0, limit) as Meal[]);
+        setHasMore(sorted.length > limit);
       })
       .catch((err) => console.error("MealCard:", err));
 
-  useEffect(() => { load(); }, [refreshKey]);
+  useEffect(() => { load(); }, [refreshKey, limit]);
 
   const startEdit = (m: Meal) => {
     setEditingId(m.id);
@@ -120,7 +123,7 @@ export function MealCard({ refreshKey = 0, onMealEdited }: MealCardProps) {
 
       {/* Meal rows */}
       <div
-        className={`flex flex-col gap-3 overflow-hidden transition-all duration-300 ${collapsed ? "max-h-0 opacity-0" : "max-h-[600px] opacity-100 mt-5"
+        className={`flex flex-col gap-3 overflow-hidden transition-all duration-300 ${collapsed ? "max-h-0 opacity-0" : "max-h-[5000px] opacity-100 mt-5"
           }`}
       >
         {meals.map((item) =>
@@ -216,6 +219,14 @@ export function MealCard({ refreshKey = 0, onMealEdited }: MealCardProps) {
               </button>
             </div>
           )
+        )}
+        {hasMore && (
+          <button
+            onClick={() => setLimit((l) => l + 5)}
+            className="w-full py-2.5 mt-1 flex items-center justify-center gap-2 text-sm font-medium text-slate-400 bg-slate-900/30 hover:bg-slate-900/60 hover:text-slate-200 border border-white/5 rounded-xl transition-all duration-200"
+          >
+            Load More
+          </button>
         )}
       </div>
     </div>
