@@ -197,14 +197,14 @@ export function WeeklyTimeline({ refreshKey = 0, onMealEdited }: WeeklyTimelineP
   }, []);
 
   return (
-    <div className="relative bg-slate-800 rounded-2xl p-6 shadow-xl border border-white/5 overflow-hidden">
+    <div className="relative bg-[#f4f0e6] dark:bg-slate-800 rounded-2xl p-6 shadow-xl border border-black/10 dark:border-white/5 overflow-hidden">
       {/* Accent bar */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 to-pink-500 opacity-80" />
 
       {/* Header */}
       <div className="flex items-center gap-2.5 mb-5">
         <Calendar size={22} className="text-violet-400" />
-        <h2 className="text-lg font-semibold text-slate-100">Last 5 Days</h2>
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Last 5 Days</h2>
       </div>
 
       {/* Row 1: column headers */}
@@ -214,7 +214,7 @@ export function WeeklyTimeline({ refreshKey = 0, onMealEdited }: WeeklyTimelineP
         {days.map((day) => (
           <div key={day.dateKey} className="flex-1 text-center">
             <div
-              className={`text-xs font-semibold ${day.isToday ? "text-violet-400" : "text-slate-400"
+              className={`text-xs font-semibold ${day.isToday ? "text-violet-400" : "text-slate-600 dark:text-slate-400"
                 }`}
             >
               {day.label}
@@ -231,7 +231,7 @@ export function WeeklyTimeline({ refreshKey = 0, onMealEdited }: WeeklyTimelineP
           {TIME_AXIS.map(({ label, pct }) => (
             <span
               key={label}
-              className="absolute right-1 text-[10px] leading-none text-slate-500"
+              className="absolute right-1 text-[10px] leading-none text-slate-500 dark:text-slate-500"
               style={{
                 top: `${pct}%`,
                 transform:
@@ -256,8 +256,8 @@ export function WeeklyTimeline({ refreshKey = 0, onMealEdited }: WeeklyTimelineP
               <div
                 className={`relative rounded-lg border cursor-pointer transition-all duration-200 ${
                   isSelected
-                    ? "bg-slate-700/60 border-violet-500/50 shadow-[0_0_12px_rgba(139,92,246,0.2)]"
-                    : "bg-slate-900/50 border-white/5 hover:border-white/15"
+                    ? "bg-[#e6e2d6]/60 dark:bg-slate-700/60 border-violet-500/50 shadow-[0_0_12px_rgba(139,92,246,0.2)]"
+                    : "bg-[#fcfaf7] dark:bg-slate-900/50 border-black/10 dark:border-white/5 hover:border-black/20 dark:hover:border-white/15"
                 }`}
                 style={{ height: TRACK_H }}
                 onClick={() => setSelectedDay(isSelected ? null : day.dateKey)}
@@ -266,7 +266,7 @@ export function WeeklyTimeline({ refreshKey = 0, onMealEdited }: WeeklyTimelineP
                 {TIME_AXIS.map(({ label, pct }) => (
                   <div
                     key={label}
-                    className="absolute left-0 right-0 border-t border-white/[0.06]"
+                    className="absolute left-0 right-0 border-t border-black/10 dark:border-white/[0.06]"
                     style={{ top: `${pct}%` }}
                   />
                 ))}
@@ -297,7 +297,7 @@ export function WeeklyTimeline({ refreshKey = 0, onMealEdited }: WeeklyTimelineP
 
               {/* Meal count badge, Fasting duration & Daily calories */}
               <div className="mt-1.5 flex flex-col items-center">
-                <span className="text-[10px] text-slate-500" title="Meals today">
+                <span className="text-[10px] text-slate-500 dark:text-slate-500" title="Meals today">
                   {day.meals.length > 0 ? `${day.meals.length} meals` : "—"}
                 </span>
                 <span
@@ -331,37 +331,37 @@ export function WeeklyTimeline({ refreshKey = 0, onMealEdited }: WeeklyTimelineP
           const day = days.find((d) => d.dateKey === selectedDay);
           if (!day) return null;
           return (
-            <div className="bg-slate-900/60 border border-violet-500/20 rounded-xl overflow-hidden">
-              <div className="px-4 py-2 border-b border-white/5 flex items-center justify-between">
+            <div className="bg-[#ffffff] dark:bg-slate-900/60 border border-violet-500/20 rounded-xl overflow-hidden">
+              <div className="px-4 py-2 border-b border-black/10 dark:border-white/5 flex items-center justify-between">
                 <span className="text-xs font-semibold text-violet-400">
                   {day.label} — {day.shortDate}
                 </span>
-                <span className="text-[10px] text-slate-500">
+                <span className="text-[10px] text-slate-500 dark:text-slate-500">
                   {day.meals.length} meal{day.meals.length !== 1 ? "s" : ""}
                 </span>
               </div>
               {day.meals.length === 0 ? (
-                <p className="px-4 py-3 text-sm text-slate-500 italic">No meals recorded.</p>
+                <p className="px-4 py-3 text-sm text-slate-500 dark:text-slate-500 italic">No meals recorded.</p>
               ) : (
-                <ul className="divide-y divide-white/5">
+                <ul className="divide-y divide-black/10 dark:divide-white/5">
                   {day.meals.map((meal) => (
                     editingId === meal.id ? (
-                      <li key={meal.id} className="px-4 py-3 bg-slate-800/80 border-y border-violet-500/30 flex flex-col gap-3">
+                      <li key={meal.id} className="px-4 py-3 bg-[#f4f0e6] dark:bg-slate-800/80 border-y border-violet-500/30 flex flex-col gap-3">
                         <input
                           type="text"
                           value={editMeal}
                           onChange={(e) => setEditMeal(e.target.value)}
-                          className="w-full bg-slate-900/60 border border-white/10 text-slate-100 px-3 py-2 rounded-lg text-[14px] focus:outline-none focus:border-violet-500 focus:ring-[3px] focus:ring-violet-500/20"
+                          className="w-full bg-[#ffffff] dark:bg-slate-900/60 border border-black/20 dark:border-white/10 text-slate-900 dark:text-slate-100 px-3 py-2 rounded-lg text-[14px] focus:outline-none focus:border-violet-500 focus:ring-[3px] focus:ring-violet-500/20"
                           placeholder="Meal name"
                           autoFocus
                         />
                         <div className="relative flex items-center">
-                          <Flame size={15} className="absolute left-3 text-slate-500" />
+                          <Flame size={15} className="absolute left-3 text-slate-500 dark:text-slate-500" />
                           <input
                             type="number"
                             value={editCalories}
                             onChange={(e) => setEditCalories(e.target.value)}
-                            className="w-full bg-slate-900/60 border border-white/10 text-slate-100 pl-9 pr-3 py-2 rounded-lg text-[14px] focus:outline-none focus:border-violet-500 focus:ring-[3px] focus:ring-violet-500/20 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                            className="w-full bg-[#ffffff] dark:bg-slate-900/60 border border-black/20 dark:border-white/10 text-slate-900 dark:text-slate-100 pl-9 pr-3 py-2 rounded-lg text-[14px] focus:outline-none focus:border-violet-500 focus:ring-[3px] focus:ring-violet-500/20 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                             placeholder="Calories (optional)"
                             min={0}
                           />
@@ -370,7 +370,7 @@ export function WeeklyTimeline({ refreshKey = 0, onMealEdited }: WeeklyTimelineP
                           type="datetime-local"
                           value={editTime}
                           onChange={(e) => setEditTime(e.target.value)}
-                          className="w-full bg-slate-900/60 border border-white/10 text-slate-100 px-3 py-2 rounded-lg text-[14px] focus:outline-none focus:border-violet-500 focus:ring-[3px] focus:ring-violet-500/20 [color-scheme:dark]"
+                          className="w-full bg-[#ffffff] dark:bg-slate-900/60 border border-black/20 dark:border-white/10 text-slate-900 dark:text-slate-100 px-3 py-2 rounded-lg text-[14px] focus:outline-none focus:border-violet-500 focus:ring-[3px] focus:ring-violet-500/20 dark:[color-scheme:dark]"
                         />
                         <div className="flex gap-2">
                           <button
@@ -391,7 +391,7 @@ export function WeeklyTimeline({ refreshKey = 0, onMealEdited }: WeeklyTimelineP
                           </button>
                           <button
                             onClick={cancelEdit}
-                            className="flex-1 flex items-center justify-center gap-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm font-semibold py-2 rounded-lg transition-colors duration-150"
+                            className="flex-1 flex items-center justify-center gap-1.5 bg-[#e6e2d6] dark:bg-slate-700 hover:bg-[#d6cfbe] dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 text-sm font-semibold py-2 rounded-lg transition-colors duration-150"
                           >
                             <X size={15} />
                             Cancel
@@ -399,8 +399,8 @@ export function WeeklyTimeline({ refreshKey = 0, onMealEdited }: WeeklyTimelineP
                         </div>
                       </li>
                     ) : (
-                      <li key={meal.id} className="px-4 py-2.5 flex items-center justify-between group hover:bg-slate-800/40 transition-colors">
-                        <span className="text-sm text-slate-100">{meal.meal}</span>
+                      <li key={meal.id} className="px-4 py-2.5 flex items-center justify-between group hover:bg-[#f4f0e6]/60 dark:hover:bg-slate-800/40 transition-colors">
+                        <span className="text-sm text-slate-900 dark:text-slate-100">{meal.meal}</span>
                         <div className="flex items-center gap-3 shrink-0 ml-4">
                           {meal.calories !== undefined && (
                             <span className="flex items-center gap-0.5 text-[11px] text-orange-400/80">
@@ -408,10 +408,10 @@ export function WeeklyTimeline({ refreshKey = 0, onMealEdited }: WeeklyTimelineP
                               {meal.calories} kcal
                             </span>
                           )}
-                          <span className="text-xs text-slate-400">{formatShortTime(meal.timestamp)}</span>
+                          <span className="text-xs text-slate-600 dark:text-slate-400">{formatShortTime(meal.timestamp)}</span>
                           <button
                             onClick={() => startEdit(meal)}
-                            className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-150 p-1.5 rounded-lg hover:bg-slate-700 text-slate-400 hover:text-slate-200 shrink-0"
+                            className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-150 p-1.5 rounded-lg hover:bg-[#e6e2d6] dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 shrink-0"
                             aria-label="Edit meal"
                           >
                             <Pencil size={14} />

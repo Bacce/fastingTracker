@@ -4,6 +4,7 @@ import { MealCard } from "./components/MealCard";
 import { FastingStatus } from "./components/FastingStatus";
 import { WeeklyTimeline } from "./components/WeeklyTimeline";
 import { DataImportExport } from "./components/DataImportExport";
+import { ThemeSelector } from "./components/ThemeSelector";
 
 function App() {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -17,6 +18,7 @@ function App() {
       <WeeklyTimeline refreshKey={refreshKey} onMealEdited={handleMealAdded} />
       <MealCard refreshKey={refreshKey} onMealEdited={handleMealAdded} />
       <DataImportExport onImport={handleMealAdded} />
+      <ThemeSelector />
     </div>
   );
 }

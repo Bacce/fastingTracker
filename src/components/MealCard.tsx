@@ -102,7 +102,7 @@ export function MealCard({ refreshKey = 0, onMealEdited }: MealCardProps) {
   if (meals.length === 0) return null;
 
   return (
-    <div className="relative bg-slate-800 rounded-2xl p-6 shadow-xl border border-white/5 overflow-hidden">
+    <div className="relative bg-[#f4f0e6] dark:bg-slate-800 rounded-2xl p-6 shadow-xl border border-black/10 dark:border-white/5 overflow-hidden">
       {/* Accent bar */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-emerald-500 opacity-80" />
 
@@ -113,10 +113,10 @@ export function MealCard({ refreshKey = 0, onMealEdited }: MealCardProps) {
         aria-expanded={!collapsed}
       >
         <Utensils size={22} className="text-blue-500" />
-        <h2 className="text-lg font-semibold text-slate-100 flex-1 text-left">Recent Meals</h2>
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 flex-1 text-left">Recent Meals</h2>
         <ChevronDown
           size={18}
-          className={`text-slate-400 transition-transform duration-300 group-hover:text-slate-200 ${collapsed ? "" : "rotate-180"
+          className={`text-slate-600 dark:text-slate-400 transition-transform duration-300 group-hover:text-slate-800 dark:group-hover:text-slate-200 ${collapsed ? "" : "rotate-180"
             }`}
         />
       </button>
@@ -131,24 +131,24 @@ export function MealCard({ refreshKey = 0, onMealEdited }: MealCardProps) {
             /* ── Edit row ── */
             <div
               key={item.id}
-              className="bg-slate-900/40 border border-blue-500/30 px-4 py-3 rounded-xl flex flex-col gap-3"
+              className="bg-[#fcfaf7]/70 dark:bg-slate-900/40 border border-blue-500/30 px-4 py-3 rounded-xl flex flex-col gap-3"
             >
               <input
                 type="text"
                 value={editMeal}
                 onChange={(e) => setEditMeal(e.target.value)}
-                className="w-full bg-slate-900/60 border border-white/10 text-slate-100 px-3 py-2 rounded-lg text-[14px] focus:outline-none focus:border-blue-500 focus:ring-[3px] focus:ring-blue-500/20"
+                className="w-full bg-[#ffffff] dark:bg-slate-900/60 border border-black/20 dark:border-white/10 text-slate-900 dark:text-slate-100 px-3 py-2 rounded-lg text-[14px] focus:outline-none focus:border-blue-500 focus:ring-[3px] focus:ring-blue-500/20"
                 placeholder="Meal name"
                 autoFocus
               />
               {/* Calories edit */}
               <div className="relative flex items-center">
-                <Flame size={15} className="absolute left-3 text-slate-500" />
+                <Flame size={15} className="absolute left-3 text-slate-500 dark:text-slate-500" />
                 <input
                   type="number"
                   value={editCalories}
                   onChange={(e) => setEditCalories(e.target.value)}
-                  className="w-full bg-slate-900/60 border border-white/10 text-slate-100 pl-9 pr-3 py-2 rounded-lg text-[14px] focus:outline-none focus:border-blue-500 focus:ring-[3px] focus:ring-blue-500/20 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  className="w-full bg-[#ffffff] dark:bg-slate-900/60 border border-black/20 dark:border-white/10 text-slate-900 dark:text-slate-100 pl-9 pr-3 py-2 rounded-lg text-[14px] focus:outline-none focus:border-blue-500 focus:ring-[3px] focus:ring-blue-500/20 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   placeholder="Calories (optional)"
                   min={0}
                 />
@@ -157,7 +157,7 @@ export function MealCard({ refreshKey = 0, onMealEdited }: MealCardProps) {
                 type="datetime-local"
                 value={editTime}
                 onChange={(e) => setEditTime(e.target.value)}
-                className="w-full bg-slate-900/60 border border-white/10 text-slate-100 px-3 py-2 rounded-lg text-[14px] focus:outline-none focus:border-blue-500 focus:ring-[3px] focus:ring-blue-500/20 [color-scheme:dark]"
+                className="w-full bg-[#ffffff] dark:bg-slate-900/60 border border-black/20 dark:border-white/10 text-slate-900 dark:text-slate-100 px-3 py-2 rounded-lg text-[14px] focus:outline-none focus:border-blue-500 focus:ring-[3px] focus:ring-blue-500/20 dark:[color-scheme:dark]"
               />
               <div className="flex gap-2">
                 <button
@@ -178,7 +178,7 @@ export function MealCard({ refreshKey = 0, onMealEdited }: MealCardProps) {
                 </button>
                 <button
                   onClick={cancelEdit}
-                  className="flex-1 flex items-center justify-center gap-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm font-semibold py-2 rounded-lg transition-colors duration-150"
+                  className="flex-1 flex items-center justify-center gap-1.5 bg-[#e6e2d6] dark:bg-slate-700 hover:bg-[#d6cfbe] dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 text-sm font-semibold py-2 rounded-lg transition-colors duration-150"
                 >
                   <X size={15} />
                   Cancel
@@ -189,17 +189,17 @@ export function MealCard({ refreshKey = 0, onMealEdited }: MealCardProps) {
             /* ── Display row ── */
             <div
               key={item.id}
-              className="group bg-slate-900/30 border border-white/5 px-4 py-3 rounded-xl flex items-center gap-3 transition-colors duration-200 hover:bg-slate-900/60"
+              className="group bg-[#fcfaf7]/50 dark:bg-slate-900/30 border border-black/10 dark:border-white/5 px-4 py-3 rounded-xl flex items-center gap-3 transition-colors duration-200 hover:bg-[#ffffff] dark:hover:bg-slate-900/60"
             >
               <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-500/10 shrink-0">
                 <Utensils size={15} className="text-blue-400" />
               </div>
               <div className="flex flex-col gap-0.5 min-w-0 flex-1">
-                <span className="font-medium text-[15px] text-slate-100 truncate">
+                <span className="font-medium text-[15px] text-slate-900 dark:text-slate-100 truncate">
                   {item.meal}
                 </span>
                 <div className="flex items-center gap-2.5">
-                  <span className="text-xs text-slate-400">
+                  <span className="text-xs text-slate-600 dark:text-slate-400">
                     {formatTime(item.timestamp)}
                   </span>
                   {item.calories !== undefined && (
@@ -212,7 +212,7 @@ export function MealCard({ refreshKey = 0, onMealEdited }: MealCardProps) {
               </div>
               <button
                 onClick={() => startEdit(item)}
-                className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-150 p-1.5 rounded-lg hover:bg-slate-700 text-slate-400 hover:text-slate-200 shrink-0"
+                className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-150 p-1.5 rounded-lg hover:bg-[#e6e2d6] dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 shrink-0"
                 aria-label="Edit meal"
               >
                 <Pencil size={14} />
@@ -223,7 +223,7 @@ export function MealCard({ refreshKey = 0, onMealEdited }: MealCardProps) {
         {hasMore && (
           <button
             onClick={() => setLimit((l) => l + 5)}
-            className="w-full py-2.5 mt-1 flex items-center justify-center gap-2 text-sm font-medium text-slate-400 bg-slate-900/30 hover:bg-slate-900/60 hover:text-slate-200 border border-white/5 rounded-xl transition-all duration-200"
+            className="w-full py-2.5 mt-1 flex items-center justify-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 bg-[#fcfaf7]/50 dark:bg-slate-900/30 hover:bg-[#ffffff] dark:hover:bg-slate-900/60 hover:text-slate-800 dark:hover:text-slate-200 border border-black/10 dark:border-white/5 rounded-xl transition-all duration-200"
           >
             Load More
           </button>

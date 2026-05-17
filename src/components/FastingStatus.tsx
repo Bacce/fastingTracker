@@ -159,7 +159,7 @@ export function FastingStatus({ refreshKey = 0 }: FastingStatusProps) {
 
   return (
     <div
-      className="relative bg-slate-800 rounded-2xl p-6 shadow-xl border border-white/5 overflow-hidden cursor-pointer select-none"
+      className="relative bg-[#f4f0e6] dark:bg-slate-800 rounded-2xl p-6 shadow-xl border border-black/10 dark:border-white/5 overflow-hidden cursor-pointer select-none"
       onClick={() => {
         setExpanded((v) => {
           if (v) setSelectedPhaseLabel(null);
@@ -173,13 +173,13 @@ export function FastingStatus({ refreshKey = 0 }: FastingStatusProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2.5">
-          <Zap size={22} className="text-slate-300" />
-          <h2 className="text-lg font-semibold text-slate-100">Fasting Status</h2>
+          <Zap size={22} className="text-slate-700 dark:text-slate-300" />
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Fasting Status</h2>
         </div>
         <div className="flex items-center gap-2">
           <ChevronDown
             size={18}
-            className={`text-slate-400 transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}
+            className={`text-slate-600 dark:text-slate-400 transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}
           />
         </div>
       </div>
@@ -187,16 +187,16 @@ export function FastingStatus({ refreshKey = 0 }: FastingStatusProps) {
       {/* Timer */}
       <div className="flex items-end gap-1 mb-5">
         <div className="flex items-baseline gap-0.5">
-          <span className="text-5xl font-bold tabular-nums text-slate-100 tracking-tight">{h}</span>
-          <span className="text-2xl font-bold text-slate-400 mb-0.5">h</span>
+          <span className="text-5xl font-bold tabular-nums text-slate-900 dark:text-slate-100 tracking-tight">{h}</span>
+          <span className="text-2xl font-bold text-slate-600 dark:text-slate-400 mb-0.5">h</span>
         </div>
         <div className="flex items-baseline gap-0.5 ml-2">
-          <span className="text-5xl font-bold tabular-nums text-slate-100 tracking-tight">{m}</span>
-          <span className="text-2xl font-bold text-slate-400 mb-0.5">m</span>
+          <span className="text-5xl font-bold tabular-nums text-slate-900 dark:text-slate-100 tracking-tight">{m}</span>
+          <span className="text-2xl font-bold text-slate-600 dark:text-slate-400 mb-0.5">m</span>
         </div>
         <div className="flex items-baseline gap-0.5 ml-2">
-          <span className="text-5xl font-bold tabular-nums text-slate-300 tracking-tight">{s}</span>
-          <span className="text-2xl font-bold text-slate-500 mb-0.5">s</span>
+          <span className="text-5xl font-bold tabular-nums text-slate-700 dark:text-slate-300 tracking-tight">{s}</span>
+          <span className="text-2xl font-bold text-slate-500 dark:text-slate-500 mb-0.5">s</span>
         </div>
       </div>
 
@@ -207,7 +207,7 @@ export function FastingStatus({ refreshKey = 0 }: FastingStatusProps) {
           const isSelected = p.label === selectedPhaseLabel;
           const badgeClass = isCurrent
             ? p.badgeColor
-            : "text-slate-500 border-slate-700/50 bg-slate-800/30 hover:bg-slate-700/50";
+            : "text-slate-500 dark:text-slate-500 border-black/20 dark:border-slate-700/50 bg-[#f4f0e6]/50 dark:bg-slate-800/30 hover:bg-[#e6e2d6]/50 dark:hover:bg-slate-700/50";
             
           return (
             <span
@@ -219,7 +219,7 @@ export function FastingStatus({ refreshKey = 0 }: FastingStatusProps) {
               }}
               className={`cursor-pointer text-[10px] font-medium px-2.5 py-1 rounded-full border transition-all duration-300 ${badgeClass} ${
                 isSelected ? "ring-1 ring-slate-300 !border-slate-300" : ""
-              } ${!isCurrent && isSelected ? "text-slate-200" : ""}`}
+              } ${!isCurrent && isSelected ? "text-slate-800 dark:text-slate-200" : ""}`}
             >
               {p.label}
             </span>
@@ -229,11 +229,11 @@ export function FastingStatus({ refreshKey = 0 }: FastingStatusProps) {
 
       {/* Phase progress bar */}
       <div className="mb-5">
-        <div className="flex justify-between text-xs text-slate-500 mb-1.5">
+        <div className="flex justify-between text-xs text-slate-500 dark:text-slate-500 mb-1.5">
           <span>{phase.state}</span>
           <span>{Math.round(progress * 100)}%</span>
         </div>
-        <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
+        <div className="h-1.5 bg-[#e6e2d6] dark:bg-slate-700 rounded-full overflow-hidden">
           <div
             className={`h-full bg-gradient-to-r ${phase.gradient} rounded-full transition-all duration-1000`}
             style={{ width: `${progress * 100}%` }}
@@ -247,18 +247,18 @@ export function FastingStatus({ refreshKey = 0 }: FastingStatusProps) {
           expanded ? "max-h-48 opacity-100 mt-5" : "max-h-0 opacity-0 mt-0"
         }`}
       >
-        <div className="bg-slate-900/40 border border-white/5 rounded-xl px-4 py-3.5 flex flex-col gap-2">
-          <p className="text-sm text-slate-300 leading-relaxed">
+        <div className="bg-[#fcfaf7]/70 dark:bg-slate-900/40 border border-black/10 dark:border-white/5 rounded-xl px-4 py-3.5 flex flex-col gap-2">
+          <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
             {selectedPhaseLabel && selectedPhaseLabel !== phase.label && (
-              <span className="font-semibold text-slate-200 mr-2">{displayPhase.label}:</span>
+              <span className="font-semibold text-slate-800 dark:text-slate-200 mr-2">{displayPhase.label}:</span>
             )}
             {displayPhase.description}
           </p>
-          <p className="text-xs text-slate-400 leading-relaxed">
+          <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
             <span className="text-emerald-400 font-medium">Benefit: </span>
             {displayPhase.benefit}
           </p>
-          <p className="text-xs text-slate-500 font-medium">
+          <p className="text-xs text-slate-500 dark:text-slate-500 font-medium">
             Duration: {displayPhase.state}
           </p>
         </div>

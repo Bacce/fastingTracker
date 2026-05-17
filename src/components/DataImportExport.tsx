@@ -73,14 +73,14 @@ export function DataImportExport({ onImport }: { onImport: () => void }) {
     <div className="flex gap-4">
       <button
         onClick={handleExport}
-        className="flex-1 flex items-center justify-center gap-2 bg-slate-800 border border-white/10 hover:bg-slate-700 text-slate-200 text-sm font-semibold py-3 px-4 rounded-xl shadow-lg transition-colors duration-200"
+        className="flex-1 flex items-center justify-center gap-2 bg-[#f4f0e6] dark:bg-slate-800 border border-black/20 dark:border-white/10 hover:bg-[#e6e2d6] dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-sm font-semibold py-3 px-4 rounded-xl shadow-lg transition-colors duration-200"
       >
         <Download size={16} className="text-blue-400" />
         Export Data
       </button>
       <button
         onClick={() => fileInputRef.current?.click()}
-        className="flex-1 flex items-center justify-center gap-2 bg-slate-800 border border-white/10 hover:bg-slate-700 text-slate-200 text-sm font-semibold py-3 px-4 rounded-xl shadow-lg transition-colors duration-200"
+        className="flex-1 flex items-center justify-center gap-2 bg-[#f4f0e6] dark:bg-slate-800 border border-black/20 dark:border-white/10 hover:bg-[#e6e2d6] dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-sm font-semibold py-3 px-4 rounded-xl shadow-lg transition-colors duration-200"
       >
         <Upload size={16} className="text-emerald-400" />
         Import Data
