@@ -324,7 +324,7 @@ export function WeeklyTimeline({ refreshKey = 0, onMealEdited }: WeeklyTimelineP
       {/* Expanded day meal list */}
       <div
         className={`overflow-hidden transition-all duration-300 ${
-          selectedDay ? "max-h-96 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0"
+          selectedDay ? "max-h-[2000px] opacity-100 mt-4" : "max-h-0 opacity-0 mt-0"
         }`}
       >
         {(() => {
